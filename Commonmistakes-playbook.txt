@@ -1,0 +1,31 @@
+Common mistakes  - not properly handling errors, neglecting to secure sensitive information like passwords or API keys, using overly complex playbooks, and not testing playbooks thoroughly before applying them in a production environment.
+
+Common mistake can be, not using variables, bad secrets handling, no proper error handling in your play, nevertheless these simple mistakes can be fixed by simply using ansible roles when necessary, using vault for secret handling, using variables for playbook reusability.
+
+
+1. Use encryption whenever the content needs it. 
+2. Have access ristricted  to only limited folks that know what they are doing. 
+3. Aviod environment specific values hardcoded at any cost. 
+4. Do dry runs. Don’t presume what works with every deployment will continue to work the same way always
+
+Common mistakes when implementing Ansible authentication tools include misconfiguring credentials, exposing sensitive information in playbooks, using weak passwords, and failing to secure communication channels. It's crucial to follow security best practices, such as using encrypted variables, managing secrets securely, and restricting access to sensitive files and data. Regularly updating passwords and keeping Ansible and related tools up-to-date also helps mitigate potential vulnerabilities.
+
+Another frequent error is inadequate variable management, leading to hard-coded values and reduced flexibility across different environments. This can result in playbooks that are not reusable and harder to maintain. 
+
+Common mistakes when implementing Ansible automation tools include inadequate inventory management, which can lead to confusion. Lack of error handling can cause unexpected failures, while misuse of variables can lead to unpredictable behavior. Neglecting Ansible’s rich set of modules can result in unnecessary work, and poor playbook structure can hinder maintainability and scalability. Not using roles can lead to disorganization, and hardcoding secrets pose a security risk. Failing to test playbooks can allow errors to slip through, and ignoring established community practices can hinder effective automation. These mistakes highlight the importance of following best practices in Ansible implementation.
+
+
+
+Lack of Planning
+Not Using Roles
+Poor Variable Management
+Inadequate Error Handling
+Security Oversights
+No Source Control
+Overlooking Idempotence
+Ignoring Documentation
+Using Shell Commands Unnecessarily
+Not Testing Playbooks
+Not Keeping Ansible and Modules Updated
+
+
