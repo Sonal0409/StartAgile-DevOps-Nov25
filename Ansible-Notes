@@ -291,3 +291,192 @@ save the file
 # ansible-playbook playbook1.yml --syntax-check 
 
 # ansible-playbook playbook1.yml
+
+
+Execute a playbook to install package and create a file
+
+
+# vim playbook2.yml
+
+
+- name: Install packages on the worker node
+  hosts: webserver
+  become: true
+  become_user: root
+  tasks:
+  - name: update the apt repo
+    command: apt-get update
+  - name: install php on hostserver
+    package: name=php state=present
+  - name: Create a file on hostserver
+    file: path=/tmp/myfile state=touch
+
+
+Save the file(:wq!)
+
+# ansible-playbook playbook2.yml
+
+
+===========================================
+Variables in Playbooks:
+==========================================
+
+Variables -> temporary memory locations that store data 
+
+To make our playbooks reusable use variables 
+using variables, we will be able to pass new data to the parameters in the tasks sections
+
+A variable can store a single value or a list of values  
+variables can store a string, number, boolean value 
+Variables are 2 types in ansible - Custom and fact variables
+
+ 
+Custom variables:
+=======================
+  - Variables created by users 
+  - variable name given by user 
+  - variable value given by user 
+  - These variables can be declared in a playbook or in a sperate YAML file or in a inventory file also 
+  - The variable values can be referred in the tasks section as {{ var_name }} 
+
+
+
+
+
+# vim playbookvaraibles.yml
+
+- name: Custom Variables in Ansible 
+  hosts: webserver
+  become: true
+  become_user: root
+  vars:
+    pkg_name: git
+    pkg_state: present
+    file_path: /tmp/mydemo
+    file_state: directory
+  tasks:
+  - name: update the apt repo
+    command: apt-get update
+  - name: install {{ pkg_name }} on hostserver
+    package: name={{ pkg_name }} state={{ pkg_state }}
+  - name: Create a directory on hostserver
+    file: path={{ file_path }} state={{ file_state }}
+Save the playbook and run it.
+
+=============================================
+Store the variables in a separate file
+
+
+# vim variables.yml
+
+    pkg_name: git
+    pkg_state: present
+    file_path: /tmp/mydemo
+    file_state: directory
+
+Save the file (:wq!)
+
+
+
+# vim playbook4.yml
+
+- name: Custom Variables in Ansible 
+  hosts: webserver
+  become: true
+  become_user: root
+  # vars:  local variables- 
+  vars_files:
+    - variables.yml
+  tasks:
+  - name: update the apt repo
+    command: apt-get update
+  - name: install {{ pkg_name }} on hostserver
+    package: name={{ pkg_name }} state={{ pkg_state }}
+  - name: Create a directory on hostserver
+    file: path={{ file_path }} state={{ file_state }}
+
+
+Save the file and run the playbook
+
+==============================
+Run the playbook by passing values to the variables at runtime.
+Use the option : --extra-vars
+
+# ansible-playbook playbook4.yml --extra-vars "pkg_name=maven pkg_state=absent file_path=/tmp/newdemo file_state=touch"
+
+===============================
+FACT Variables:
+================================
+Whenever ansible controller connects to its worker nodes
+ Always Ansible will gather complete information or details about each worker node
+It will gather information like host details, architecture,network,ipaddress,
+ BIOS information,OS,memory etc etc
+This gathered information is called as FACTS
+
+Ansible stores each fact in a variable called as fact variables.
+These variables are created by Ansible and values are also computed by Ansible
+
+These variables will always start with “ansible_variablebName”
+
+These variable values are computed at runtime
+Some of these variable values are unique to each host server
+
+These variables are also called dynamic variables.
+The value of the variable changes from host to host
+
+User cannot create fact variable and cannot change the value of fact variable 
+
+In ansible we have a module called as setup module.
+
+
+Demo 1: See the fact variables:
+==============================
+
+ # ansible webserver -m setup
+ # ansible webserver -m setup -a "filter=ansible_hostname"
+ # ansible webserver -m setup -a "filter=ansible_os_family"
+# ansible webserver -m setup -a "filter=ansible_distribution"
+# ansible webserver -m setup -a "filter=ansible_dist*"
+
+
+
+
+# vim playbook5.yml
+
+
+- name: Fact variables in Ansible
+  hosts: webserver
+  become: true
+  tasks:
+  - name: install httpd package
+    package: name=httpd state=present
+    when: ansible_os_family == "RHEL"
+  - name: install apache2 package
+    package: name=apache2 state=present
+    when: ansible_os_family == "Debian"
+
+Save the file and run it
+
+Example 2: When keyword
+============================
+
+# vim playbookWhen.yml
+
+
+- name: When condition in playbook
+  hosts: webserver
+  become: true
+  tasks:
+  - name: install package on Debain machines
+    package: name=apache2 state=present
+    when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "24"
+  - name: Execute a command
+    command: hostname -s
+    when: (ansible_distribution == "Ubuntu") or
+               (ansible_distribution == "Amazon") or
+               (ansible_distribution == "RHEL")
+
+
+Save the file and execute the file.
+
+==============================================
