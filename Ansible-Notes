@@ -510,3 +510,157 @@ Save the file and execute the file.
     service: name={{ pkg_name }} state=restarted
 
 ==================================================
+
+Ansible Roles:
+
+It is just a way to write ansible code 
+The roles are created in /etc/ansible/roles directory 
+Roles are just directories 
+every role will have a unique name 
+ansible-galaxy is a command used to create roles in ansible 
+When we create a  role we get 7 directories inside it
+Whatever we wrote in the playbook, same is written in Ansible roles but playbook sections are written in differ0ent directories
+In Ansible roles there are 7 directories. the names are :
+meta : describe the role
+tasks: write only tasks as we wrote in playbook
+handlers: write only handler task 
+vars/defaults: write variable and values 
+files: if tasks is needing any file write inside this directory 
+template: just like files here we can  write jinja2 templates
+We can create multiple roles and execute them all with single playbook 
+Playbook structure will be:
+
+hosts: webserver 
+roles:
+ - rolename
+ - rolename
+======================================
+Demo:
+
+go into roles directory 
+
+# cd /etc/ansible/roles 
+
+# ansible-galaxy init apache
+
+# ls
+
+# cd apache
+
+# ls
+
+#  rm -rf README.md tests templates meta
+
+All roles folder will come an empty YAML file
+
+# vim tasks/main.yml 
+
+
+  - name: update apt repo
+    command: apt update
+  - name: Install {{ pkg_name }} package
+    package: name={{ pkg_name }} state=present
+  - name: Start the {{ pkg_name }} service
+    service: name={{ pkg_name }} state=started
+  - name: Copy HTML code on the server
+    copy: src=index.html dest={{ dest_path }}
+    notify: Restart {{ pkg_name }} service
+
+save the file 
+
+# vim vars/main.yml 
+
+pkg_name: apache2
+dest_path: /var/www/html
+
+
+save the file 
+
+# vim files/index.html 
+
+<h1> This code is deployed using Ansible Roles </h1>
+
+Save the file 
+
+# vim handlers/main.yml 
+
+- name: Restart {{ pkg_name }} service
+  service: name={{ pkg_name }} state=restarted
+
+Save the file 
+  
+To execute the role: we have to create a playbook in /etc/ansible 
+
+# cd ..
+
+# vim playbookroles.yml
+
+- name: execute roles
+  hosts: webserver
+  roles:
+    - apache
+
+ansible-playbook playbookroles.yml 
+
+
+Demo2:
+===========================
+
+# cd roles 
+
+# ansible-galaxy init docker
+
+# ls 
+
+# cd docker
+
+# vim tasks/main.yml
+
+- name: install package {{pkg_name}}
+  package: name={{pkg_name}} state=present
+- name: start {{pkg_name}} service
+  service: name={{service_name}} state=started
+- name: Clone git repo
+  git: repo={{repo_url}} dest=/tmp/gitrepo
+- name: Execute the dockerfile and build docker Image
+  command: chdir=/tmp/gitrepo docker build -t {{image_name}} .
+- name: Deploy the image
+  command: docker run -d -P {{image_name}}
+
+
+Save the file 
+
+# vim vars/main.yml 
+
+pkg_name: docker.io
+service_name: docker
+repo_url: https://github.com/Sonal0409/AnsibleDockerdemo.git
+image_name: myjavaapp:ansible
+
+
+save the file 
+
+cd ../..
+
+# vim playbookroles.yml 
+
+- name: execute roles
+  hosts: webserver
+  roles:
+    - apache
+    - docker
+
+#  ansible-playbook playbookroles.yml
+
+Validate the output:
+
+#  ansible webserver -m command -a "docker images"
+
+#  ansible webserver -m command -a "docker ps -a"
+
+Access the application:
+
+<publicIP>:<portnumber>/addressbook
+
+
+====================================================
