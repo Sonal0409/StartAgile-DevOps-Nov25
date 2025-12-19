@@ -1,0 +1,36 @@
+Kubectl ai
+Install kubectl -ai :
+curl -sSL https://raw.githubusercontent.com/GoogleCloudPlatform/kubectl-ai/main/install.sh | bash
+kubectl ai --help
+Enable Gemini API in Google Cloud
+Go to https://console.cloud.google.com/apis/library
+Change to your gmail account
+Search for Generative Language API  you will see gemini api
+
+ 
+Click on gemeini api  unable geminiapi
+ 
+
+ 
+
+Click on create credentials
+Go to credentials  on top credentials  sleect api key
+
+Create key and copy the key: AIzaSyA0CBzcO4vvq0UJY1pwOT65S1amxX9Znww
+
+ 
+Also run these commands 
+(This ensures kubectl ai can talk to Gemini models.)
+gcloud auth application-default login
+OR
+gcloud auth application-default login --no-launch-browser
+
+gcloud auth application-default set-quota-project <PROJECT_ID>
+
+Run the below command:
+export GEMINI_API_KEY="AIzaSyA0CBzcO4vvq0UJY1pwOT65S1amxX9Znww"
+kubectl-ai --llm-provider=gemini --model=gemini-2.5-flash "list all pods in namespace default"
+kubectl ai "create a deployment with 3 replicas of nginx version 1.25, expose it on port 80"
+
+
+ 
