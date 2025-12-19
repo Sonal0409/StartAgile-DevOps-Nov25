@@ -841,3 +841,20 @@ Run the playbook
 Save the file and run it
 # ansible-playbook -i aws_ec2.yml playbook-dynamic.yml
 
+
+Assignment:
+
+- hosts: webserver
+  tasks: 
+  - name: install java and maven on server 
+    package: name=maven state=present 
+  - name: Check java version 
+    command: java --version
+    register: output_version
+  - name: print output 
+    debug: var=output_version 
+  - name: Fetch java code form github 
+    git: repo="https://github.com/Sonal0409/SonarQubeCoverageJava.git" dest=/tmp/gitrepo
+  - name: Build the code 
+    command: chdir=/tmp/gitrepo mvn clean install 
+
